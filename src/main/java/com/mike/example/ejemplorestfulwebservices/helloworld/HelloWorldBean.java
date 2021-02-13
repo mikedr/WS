@@ -1,4 +1,4 @@
-package com.mike.example.ejemplorestfulwebservices;
+package com.mike.example.ejemplorestfulwebservices.helloworld;
 
 public class HelloWorldBean {
 	
