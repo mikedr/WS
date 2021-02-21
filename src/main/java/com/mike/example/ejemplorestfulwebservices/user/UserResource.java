@@ -1,6 +1,6 @@
 package com.mike.example.ejemplorestfulwebservices.user;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import java.net.URI;
 import java.util.List;
@@ -8,8 +8,8 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.*;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,18 +25,16 @@ public class UserResource {
 	UserDAOService userDAOService;
 	
 	@GetMapping(path = "/users/{id}")
-	public Resource<User> getUser(@PathVariable int id) {
+	public EntityModel<User> getUser(@PathVariable int id) {
 		User user = userDAOService.findOne(id);
 		if(user == null) 
 			throw new UserNotFoundException("id-"+id+" not found.");
 	
 		//HETEOAS
-		Resource<User> resource = new Resource<User>(user); 
+		Link link = linkTo(methodOn(this.getClass()).getAll()).withSelfRel();
+		EntityModel userResource = new EntityModel(user,link);
 		
-		ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getAll()); 	//gracias al static import
-		
-		resource.add(linkTo.withRel("all-users"));
-		return resource;
+		return userResource;
 	}
 	
 	@DeleteMapping(path = "/users/{id}")
